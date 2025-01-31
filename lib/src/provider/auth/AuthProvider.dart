@@ -89,7 +89,6 @@ class AuthNotifier extends Notifier<AuthState> {
 
     state = state.copyWith(isLoading: true, error: null);
     try {
-      
       await _authRepository.sendPhoneNumber(phoneNumber, role!);
       state = state.copyWith(isLoading: false, codeSent: true);
       startTimer();

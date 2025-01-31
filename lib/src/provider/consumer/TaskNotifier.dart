@@ -227,17 +227,15 @@ final sendTaskResponseProvider =
   }
 });
 
-final fetchTasksProvider =
-    FutureProvider.family<List<dynamic>, Map<String, dynamic>>(
-        (ref, query) async {
+final fetchTasksProvider = FutureProvider.autoDispose
+    .family<List<dynamic>, Map<String, dynamic>>((ref, query) async {
   try {
     final response = await DioConfig().dio.get(
           '/tasks',
-          queryParameters: query, // Передаем query параметры
+          queryParameters: query,
         );
 
     if (response.statusCode == 200) {
-      // Если запрос успешен, возвращаем данные (список задач)
       return response.data as List<dynamic>;
     } else {
       throw Exception("Ошибка при получении задач: ${response.statusCode}");

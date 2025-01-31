@@ -4,18 +4,52 @@ import 'package:freelance/src/components/list/task_list.dart';
 import 'package:freelance/src/constants/app_colors.dart';
 import 'package:freelance/src/provider/auth/AuthProvider.dart';
 import 'package:freelance/src/provider/consumer/TaskNotifier.dart';
+import 'package:freelance/config/token_storage.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 @RoutePage()
-class TaskScreen extends ConsumerWidget {
+class TaskScreen extends ConsumerStatefulWidget {
   const TaskScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authProvider);
-    final role = authState.role;
+  ConsumerState<TaskScreen> createState() => _TaskScreenState();
+}
+
+class _TaskScreenState extends ConsumerState<TaskScreen> {
+  String? role;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserRole();
+  }
+
+  Future<void> _loadUserRole() async {
+    final storedRole = await TokenStorage.getRole();
+    setState(() {
+      role = storedRole;
+      isLoading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedTabIndex = ref.watch(selectedTabIndexProvider);
+
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (role == null) {
+      return const Scaffold(
+        body: Center(child: Text("Ошибка: роль не найдена")),
+      );
+    }
 
     // Заголовки вкладок
     final tabTitles = role == 'Executor'
@@ -33,8 +67,6 @@ class TaskScreen extends ConsumerWidget {
             {'filters': 'tasks'},
             {'filters': 'history'},
           ];
-
-    final selectedTabIndex = ref.watch(selectedTabIndexProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -106,7 +138,7 @@ class TaskScreen extends ConsumerWidget {
         onRefresh: () async {
           print("Refresh triggered");
           final currentFilter = filters[selectedTabIndex];
-          await ref.refresh(fetchTasksProvider(currentFilter).future);
+          ref.invalidate(fetchTasksProvider(currentFilter));
         },
         child: Padding(
           padding: const EdgeInsets.all(16.0),
