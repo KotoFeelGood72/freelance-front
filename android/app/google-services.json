@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "845076941333",
+    "project_id": "freelance-f82f0",
+    "storage_bucket": "freelance-f82f0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:845076941333:android:441fe0d0679c2a0f4e5c1c",
+        "android_client_info": {
+          "package_name": "com.freelance.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkQCE8Kh-2dgIknlourJeq1LeZsowshJY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:845076941333:android:b8b74b5d2d928e974e5c1c",
+        "android_client_info": {
+          "package_name": "com.freelance.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkQCE8Kh-2dgIknlourJeq1LeZsowshJY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
