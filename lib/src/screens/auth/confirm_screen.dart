@@ -43,6 +43,7 @@ class ConfirmScreen extends ConsumerWidget {
               onSubmit: (code) async {
                 if (code.length == 4) {
                   await authNotifier.verifyCode(code);
+                  await AutoRouter.of(context).replaceAll([TaskRoute()]);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Введите полный код!')),

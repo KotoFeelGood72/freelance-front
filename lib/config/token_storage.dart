@@ -1,12 +1,12 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class TokenStorage {
   static const _storage = FlutterSecureStorage();
 
   static const String _accessTokenKey = 'access_token';
   static const String _refreshTokenKey = 'refresh_token';
-  static const String _roleKey =
-      'user_role'; // Теперь явно задаем ключ для роли
+  static const String _roleKey = 'user_role';
 
   static const String _executorDeviceTokenKey = 'executor_device_token';
   static const String _customerDeviceTokenKey = 'customer_device_token';
@@ -48,13 +48,26 @@ class TokenStorage {
     await _storage.write(key: key, value: deviceToken);
   }
 
-  // 🔹 Получение `deviceToken` в зависимости от роли
+  // 🔹 Получение `deviceToken` (если нет, запрашивается заново)
   static Future<String?> getDeviceToken(String role) async {
     String key =
         role == "Executor" ? _executorDeviceTokenKey : _customerDeviceTokenKey;
 
-    print(role);
-    return await _storage.read(key: key);
+    String? deviceToken = await _storage.read(key: key);
+
+    if (deviceToken == null) {
+      // 🔄 Запрос нового `deviceToken`, если нет сохраненного
+      deviceToken = await FirebaseMessaging.instance.getToken();
+      if (deviceToken != null) {
+        await saveDeviceToken(role, deviceToken);
+        print(
+            "📌 Запрошен и сохранен новый Device Token для $role: $deviceToken");
+      } else {
+        print("❌ Не удалось получить deviceToken");
+      }
+    }
+
+    return deviceToken;
   }
 
   // 🔹 Удаление всех токенов (включая `deviceToken`)

@@ -4,7 +4,6 @@ import 'package:freelance/src/components/list/task_list.dart';
 import 'package:freelance/src/constants/app_colors.dart';
 import 'package:freelance/src/provider/auth/AuthProvider.dart';
 import 'package:freelance/src/provider/consumer/TaskNotifier.dart';
-import 'package:freelance/config/token_storage.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,44 +18,35 @@ class TaskScreen extends ConsumerStatefulWidget {
 
 class _TaskScreenState extends ConsumerState<TaskScreen> {
   String? role;
-  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadUserRole();
-  }
-
-  Future<void> _loadUserRole() async {
-    final storedRole = await TokenStorage.getRole();
-    setState(() {
-      role = storedRole;
-      isLoading = false;
-    });
+    role = ref.read(authProvider).role;
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(authProvider, (previous, next) {
+      if (previous?.role != next.role) {
+        setState(() {
+          role = next.role;
+        });
+      }
+    });
+
     final selectedTabIndex = ref.watch(selectedTabIndexProvider);
 
-    if (isLoading) {
+    if (role == null) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
-    if (role == null) {
-      return const Scaffold(
-        body: Center(child: Text("Ошибка: роль не найдена")),
-      );
-    }
-
-    // Заголовки вкладок
     final tabTitles = role == 'Executor'
         ? ['Новые', 'Открытые', 'История']
         : ['Открытые', 'История'];
 
-    // Фильтры задач
     final filters = role == 'Executor'
         ? [
             {'filters': 'tasks'},
@@ -138,7 +128,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
         onRefresh: () async {
           print("Refresh triggered");
           final currentFilter = filters[selectedTabIndex];
-          ref.invalidate(fetchTasksProvider(currentFilter));
+          await ref.refresh(fetchTasksProvider(currentFilter).future);
         },
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -147,12 +137,15 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
             onTaskTap: (task) {
               if (role == 'Executor') {
                 if (selectedTabIndex == 1) {
-                  AutoRouter.of(context).push(ChatsRoute(
-                      chatsId: task['roomUUID'],
-                      taskId: task['id'].toString()));
+                  AutoRouter.of(context).push(
+                    ChatsRoute(
+                        chatsId: task['roomUUID'],
+                        taskId: task['id'].toString()),
+                  );
                 } else {
-                  AutoRouter.of(context)
-                      .push(TaskDetailRoute(taskId: task['id'].toString()));
+                  AutoRouter.of(context).push(
+                    TaskDetailRoute(taskId: task['id'].toString()),
+                  );
                 }
               } else {
                 AutoRouter.of(context).push(

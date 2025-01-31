@@ -25,14 +25,15 @@ class AuthRepository {
   }
 
   Future<Map<String, dynamic>> updateRole(String role) async {
+    // final deviceToken = await TokenStorage.getDeviceToken(role);
     try {
+      final deviceToken = await TokenStorage.getDeviceToken(role);
+      print(deviceToken);
       final response = await DioConfig().dio.post(
         '/update_role',
-        data: {'role': role},
+        data: {'role': role, 'token': deviceToken},
       );
       await TokenStorage.saveRole(role);
-      final deviceToken = await TokenStorage.getDeviceToken(role);
-      print("Updated Role: $role, Device Token: $deviceToken");
 
       return response.data as Map<String, dynamic>;
     } catch (e) {

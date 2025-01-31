@@ -70,7 +70,6 @@ class AuthNotifier extends Notifier<AuthState> {
       await TokenStorage.saveRole(newRole);
       await TokenStorage.saveToken(response['access_token']!);
       await TokenStorage.saveRefreshToken(response['refresh_token']!);
-      // print('tokens $response');
       state = state.copyWith(isLoading: false, role: newRole);
     } catch (e) {
       state = state.copyWith(
@@ -110,7 +109,6 @@ class AuthNotifier extends Notifier<AuthState> {
           state.copyWith(isLoading: false, error: 'Ошибка', codeSent: false);
 
       clearPhoneNumber();
-      _router.replaceAll([const TaskRoute()]);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
     }

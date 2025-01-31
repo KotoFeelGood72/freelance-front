@@ -69,46 +69,50 @@ class _NewTaskCreateScreenState extends ConsumerState<NewTaskCreateScreen> {
     bool serviceEnabled;
     LocationPermission permission;
 
-    // Проверяем включение службы геолокации
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Служба геолокации отключена")),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Служба геолокации отключена")),
+        );
+      }
       return;
     }
 
-    // Проверяем разрешения
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Разрешение на геолокацию отклонено")),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Разрешение на геолокацию отклонено")),
+          );
+        }
         return;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Геолокация заблокирована")),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Геолокация заблокирована")),
+        );
+      }
       return;
     }
 
-    // Получаем текущую позицию
     Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
 
     LatLng currentLocation = LatLng(position.latitude, position.longitude);
 
-    setState(() {
-      _selectedLocation = currentLocation;
-    });
+    if (mounted) {
+      setState(() {
+        _selectedLocation = currentLocation;
+      });
+    }
 
-    // Получаем адрес по координатам
     await _getAddressFromLatLng(currentLocation);
   }
 
@@ -122,15 +126,21 @@ class _NewTaskCreateScreenState extends ConsumerState<NewTaskCreateScreen> {
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks.first;
         final address = "${place.street}, ${place.locality}";
-        setState(() {
-          _selectedAddress = address;
-        });
+
+        if (mounted) {
+          setState(() {
+            _selectedAddress = address;
+          });
+        }
+
         ref.read(taskNotifierProvider.notifier).updateTaskCity(address);
       }
     } catch (e) {
-      setState(() {
-        _selectedAddress = "Ошибка определения адреса";
-      });
+      if (mounted) {
+        setState(() {
+          _selectedAddress = "Ошибка определения адреса";
+        });
+      }
     }
   }
 

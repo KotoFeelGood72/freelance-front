@@ -28,11 +28,6 @@ class AppRouter extends RootStackRouter {
           page: TaskRoute.page,
           path: '/task',
           guards: [authGuard],
-          children: [
-            AutoRoute(page: OpenTaskRoute.page, path: 'task/open'),
-            AutoRoute(page: HistoryTaskRoute.page, path: 'task/history'),
-            AutoRoute(page: NewTaskRoute.page, path: 'task/new'),
-          ],
         ),
         AutoRoute(
             page: NewTaskCreateRoute.page,

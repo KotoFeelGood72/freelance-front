@@ -2,6 +2,7 @@ import 'package:freelance/router/app_router.gr.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:freelance/src/components/placeholder/customers_none_tasks.dart';
 import 'package:freelance/src/provider/consumer/TaskNotifier.dart';
 
 @RoutePage()
@@ -18,6 +19,7 @@ class TaskResponseScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Отклики', style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
+        centerTitle: true,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
         actions: [
@@ -36,6 +38,13 @@ class TaskResponseScreen extends ConsumerWidget {
       ),
       body: taskResponses.when(
         data: (tasks) {
+          if (tasks.isEmpty) {
+            return const CustomersNoneTasks(
+                title: "Еще никто не откликнулся",
+                text: "Как только кто-то проявит интерес к вашему заданию, "
+                    "они появятся здесь. Следите за уведомлениями!",
+                btn: false);
+          }
           return ListView.builder(
             padding: const EdgeInsets.all(16),
             itemCount: tasks.length,
