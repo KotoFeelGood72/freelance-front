@@ -2,16 +2,17 @@ import 'package:freelance/data/models/message_models.dart';
 import 'package:freelance/providers/chat_providers.dart';
 import 'package:freelance/src/components/ui/Inputs.dart';
 import 'package:freelance/src/constants/app_colors.dart';
-import 'package:freelance/src/provider/UserNotifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MessageInput extends ConsumerStatefulWidget {
   final String chatId;
+  final int senderId;
 
   const MessageInput({
     super.key,
     required this.chatId,
+    required this.senderId,
   });
 
   @override
@@ -21,39 +22,17 @@ class MessageInput extends ConsumerStatefulWidget {
 class _MessageInputState extends ConsumerState<MessageInput> {
   final _controller = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(userProvider.notifier).loadUser();
-    });
-  }
-
   void _sendMessage() {
     final content = _controller.text.trim();
     if (content.isEmpty) return;
 
-    final userState = ref.watch(userProvider);
-
-    if (userState.user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:
-              Text('Не удалось отправить сообщение: пользователь не загружен'),
-        ),
-      );
-      return;
-    }
-
     final chatService = ref.read(chatServiceProvider);
-
-    final senderId = userState.user!.id ?? 0; // Убедитесь, что это int
 
     final message = Message(
       id: '',
       content: content,
-      senderId: senderId,
-      timestamp: DateTime.now(),
+      senderId: widget.senderId,
+      created_at: DateTime.now(),
     );
 
     chatService.sendMessage(widget.chatId, message);
@@ -62,14 +41,12 @@ class _MessageInputState extends ConsumerState<MessageInput> {
 
   @override
   Widget build(BuildContext context) {
-    final userState = ref.watch(userProvider);
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+    return Container(
       child: Row(
         children: [
           Expanded(
             child: Inputs(
-              backgroundColor: AppColors.bg,
+              backgroundColor: AppColors.white,
               controller: _controller,
               textColor: AppColors.light,
             ),

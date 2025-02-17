@@ -23,7 +23,10 @@ class _ProfileNoteScreenState extends State<ProfileNoteScreen> {
       appBar: AppBar(
         title: const Text('Уведомления'),
       ),
-      body: Padding(
+      body: Container(
+        decoration: const BoxDecoration(
+            color: AppColors.bg,
+            border: Border(top: BorderSide(width: 1, color: AppColors.border))),
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,7 +102,7 @@ class _ProfileNoteScreenState extends State<ProfileNoteScreen> {
           CupertinoSwitch(
             value: value,
             onChanged: onChanged,
-            activeColor: Colors.green,
+            activeTrackColor: Colors.green,
           ),
         ],
       ),

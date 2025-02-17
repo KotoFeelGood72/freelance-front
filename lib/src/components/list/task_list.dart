@@ -1,6 +1,6 @@
 import 'package:freelance/src/components/card/card_task.dart';
 import 'package:freelance/src/components/placeholder/customers_none_tasks.dart';
-import 'package:freelance/src/constants/app_colors.dart';
+
 import 'package:freelance/src/provider/consumer/TaskNotifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

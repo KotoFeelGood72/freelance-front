@@ -34,30 +34,33 @@ class UserNotifier extends StateNotifier<UserState> {
       : _dio = DioConfig().dio,
         super(UserState());
 
-  /// Загрузка данных пользователя
   Future<void> loadUser() async {
+    print("🔄 Загружаем пользователя...");
     state = state.copyWith(isLoading: true);
+    print("📡 Перед запросом: ${state.isLoading}, ${state.user}");
+
     try {
       final response = await _dio.get('/user');
+      print("📡 Ответ от сервера: ${response.statusCode}, ${response.data}");
+
       if (response.statusCode == 200 && response.data != null) {
         final user = Users.fromJson(response.data);
         state = state.copyWith(isLoading: false, user: user);
+        print("✅ Пользователь загружен: ${state.user}");
       } else {
         state = state.copyWith(
             isLoading: false,
             errorMessage: 'Ошибка: ${response.statusCode}, ${response.data}');
+        print("❌ Ошибка при загрузке: ${state.errorMessage}");
       }
     } on DioException catch (e) {
-      // print('[DioError] Ошибка при запросе: ${e.message}');
-      if (e.response != null) {
-        // print(
-        //     '[DioError] Ответ сервера: ${e.response?.statusCode}, ${e.response?.data}');
-      }
+      print("❌ Ошибка запроса: ${e.message}");
       state = state.copyWith(isLoading: false, errorMessage: e.message);
     } catch (e) {
-      // print('[Ошибка] Неизвестная ошибка: $e');
+      print("❌ Неизвестная ошибка: $e");
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
+    print("📡 После загрузки: ${state.isLoading}, ${state.user}");
   }
 
   /// Обновление данных пользователя
@@ -107,6 +110,7 @@ class UserNotifier extends StateNotifier<UserState> {
 
 final userProvider = StateNotifierProvider<UserNotifier, UserState>((ref) {
   final notifier = UserNotifier();
-  notifier.loadUser(); // Загружаем данные пользователя при инициализации
+  print("🎯 userProvider инициализируется...");
+  notifier.loadUser();
   return notifier;
 });

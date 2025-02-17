@@ -396,10 +396,17 @@ class TaskDetailCustomerRoute
   TaskDetailCustomerRoute({
     _i25.Key? key,
     required String taskId,
+    int? responseId,
     List<_i24.PageRouteInfo>? children,
   }) : super(
          TaskDetailCustomerRoute.name,
-         args: TaskDetailCustomerRouteArgs(key: key, taskId: taskId),
+         args: TaskDetailCustomerRouteArgs(
+           key: key,
+           taskId: taskId,
+           responseId: responseId,
+         ),
+         rawPathParams: {'id': taskId},
+         rawQueryParams: {'responseId': responseId},
          initialChildren: children,
        );
 
@@ -408,22 +415,40 @@ class TaskDetailCustomerRoute
   static _i24.PageInfo page = _i24.PageInfo(
     name,
     builder: (data) {
-      final args = data.argsAs<TaskDetailCustomerRouteArgs>();
-      return _i18.TaskDetailCustomerScreen(key: args.key, taskId: args.taskId);
+      final pathParams = data.inheritedPathParams;
+      final queryParams = data.queryParams;
+      final args = data.argsAs<TaskDetailCustomerRouteArgs>(
+        orElse:
+            () => TaskDetailCustomerRouteArgs(
+              taskId: pathParams.getString('id'),
+              responseId: queryParams.optInt('responseId'),
+            ),
+      );
+      return _i18.TaskDetailCustomerScreen(
+        key: args.key,
+        taskId: args.taskId,
+        responseId: args.responseId,
+      );
     },
   );
 }
 
 class TaskDetailCustomerRouteArgs {
-  const TaskDetailCustomerRouteArgs({this.key, required this.taskId});
+  const TaskDetailCustomerRouteArgs({
+    this.key,
+    required this.taskId,
+    this.responseId,
+  });
 
   final _i25.Key? key;
 
   final String taskId;
 
+  final int? responseId;
+
   @override
   String toString() {
-    return 'TaskDetailCustomerRouteArgs{key: $key, taskId: $taskId}';
+    return 'TaskDetailCustomerRouteArgs{key: $key, taskId: $taskId, responseId: $responseId}';
   }
 }
 

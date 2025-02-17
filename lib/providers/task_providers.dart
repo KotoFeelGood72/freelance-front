@@ -18,3 +18,15 @@ final taskByIdProvider =
   final repository = ref.watch(taskRepositoryProvider);
   return repository.fetchTaskById(id);
 });
+
+final taskSendReviewProvider =
+    FutureProvider.family<void, String>((ref, id) async {
+  final repository = ref.watch(taskRepositoryProvider);
+  return repository.sendTaskReview(id);
+});
+
+final assignExecutorProvider =
+    FutureProvider.family<void, Map<String, int>>((ref, data) async {
+  final repository = ref.watch(taskRepositoryProvider);
+  await repository.assignExecutor(data['taskId']!, data['responseId']!);
+});

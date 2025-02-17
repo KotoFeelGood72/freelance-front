@@ -53,7 +53,7 @@ class CustomersNoneTasks extends ConsumerWidget {
                 fontSize: 14,
                 color: Colors.grey,
               )),
-          if (role == 'Customer' && btn == true) // Проверка роли
+          if (role == 'Customer' && btn == true)
             Btn(
               text: 'Создать задание',
               theme: 'white',

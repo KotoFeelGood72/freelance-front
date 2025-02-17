@@ -14,7 +14,10 @@ class ProfileAppScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('О приложении'),
       ),
-      body: Padding(
+      body: Container(
+        decoration: const BoxDecoration(
+            color: AppColors.bg,
+            border: Border(top: BorderSide(width: 1, color: AppColors.border))),
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

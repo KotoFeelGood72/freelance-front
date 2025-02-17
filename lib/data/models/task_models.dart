@@ -4,9 +4,9 @@ class TaskModels {
   final int? id;
   final String? taskName;
   final String? taskDescription;
-  final int? taskPrice;
-  final DateTime? taskTerm;
-  final DateTime? taskCreated;
+  final double? taskPrice;
+  final dynamic taskTerm;
+  final dynamic taskCreated;
   final String? taskCity;
   final String? taskStatus;
   final bool? isPublic;
@@ -30,12 +30,13 @@ class TaskModels {
       id: json['id'] as int?,
       taskName: json['taskName'] as String?,
       taskDescription: json['taskDescription'] as String?,
-      taskPrice: json['taskPrice'] as int?,
-      taskTerm:
-          json['taskTerm'] != null ? DateTime.parse(json['taskTerm']) : null,
-      taskCreated: json['taskCreated'] != null
-          ? DateTime.parse(json['taskCreated'])
+      taskPrice: json['taskPrice'] != null
+          ? (json['taskPrice'] is int
+              ? (json['taskPrice'] as int).toDouble()
+              : json['taskPrice'] as double)
           : null,
+      taskTerm: json['taskTerm'] as dynamic,
+      taskCreated: json['taskCreated'] as dynamic,
       taskCity: json['taskCity'] as String?,
       taskStatus: json['taskStatus'] as String?,
       isPublic: json['isPublic'] as bool?,

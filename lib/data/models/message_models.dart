@@ -4,13 +4,13 @@ class Message {
   final String id;
   final String content;
   final dynamic senderId;
-  final DateTime timestamp;
+  final DateTime created_at;
 
   Message({
     required this.id,
     required this.content,
     required this.senderId,
-    required this.timestamp,
+    required this.created_at,
   });
 
   factory Message.fromFirestore(DocumentSnapshot doc) {
@@ -19,7 +19,9 @@ class Message {
       id: doc.id,
       content: data['content'] as String,
       senderId: data['senderId'] as int,
-      timestamp: (data['timestamp'] as Timestamp).toDate(),
+      created_at: data['created_at'] is Timestamp
+          ? (data['created_at'] as Timestamp).toDate() // ✅ Если Timestamp
+          : DateTime.parse(data['created_at']), // ✅ Если String
     );
   }
 
@@ -27,7 +29,8 @@ class Message {
     return {
       'content': content,
       'senderId': senderId,
-      'timestamp': Timestamp.fromDate(timestamp),
+      'created_at': Timestamp.fromDate(
+          created_at), // ✅ Приводим к Timestamp при сохранении
     };
   }
 }

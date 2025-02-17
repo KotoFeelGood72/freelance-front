@@ -7,7 +7,7 @@ class ChatService {
   Stream<List<Message>> getMessages(String chatId) {
     return _firestore
         .collection('rooms/$chatId/messages')
-        .orderBy('timestamp', descending: true)
+        .orderBy('created_at', descending: true)
         .snapshots()
         .map((snapshot) =>
             snapshot.docs.map((doc) => Message.fromFirestore(doc)).toList());
@@ -33,8 +33,10 @@ class ChatService {
   }
 
   Future<void> sendMessage(String chatId, Message message) async {
-    await _firestore
-        .collection('rooms/$chatId/messages')
-        .add(message.toFirestore());
+    await _firestore.collection('rooms/$chatId/messages').add({
+      ...message.toFirestore(),
+      'created_at':
+          Timestamp.now(), // ✅ Гарантируем, что сохраняется как Timestamp
+    });
   }
 }

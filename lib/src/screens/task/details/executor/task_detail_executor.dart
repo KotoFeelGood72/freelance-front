@@ -1,11 +1,9 @@
+import 'package:freelance/providers/task_providers.dart';
 import 'package:freelance/router/app_router.gr.dart';
 import 'package:freelance/src/components/ui/Btn.dart';
 import 'package:freelance/src/components/ui/Divider.dart';
-import 'package:freelance/src/components/ui/Inputs.dart';
 import 'package:freelance/src/components/ui/info_row.dart';
 import 'package:freelance/src/constants/app_colors.dart';
-import 'package:freelance/src/provider/consumer/TaskNotifier.dart';
-import 'package:freelance/src/utils/modal_utils.dart';
 import 'package:freelance/src/utils/send_repsponse.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -53,13 +51,13 @@ class TaskDetailExecutorScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        task['taskName'],
+                        task.taskName!,
                         style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const Square(),
                       Text(
-                        task['taskDescription'],
+                        task.taskDescription!,
                         style:
                             const TextStyle(fontSize: 14, color: Colors.grey),
                       ),
@@ -67,24 +65,24 @@ class TaskDetailExecutorScreen extends ConsumerWidget {
                         height: 32,
                       ),
                       InfoRow(
-                        label: 'Стоимость',
-                        value: '${task['taskPrice']} ₽',
+                        label: 'Стоимость ss',
+                        value: '${task.taskPrice} ₽',
                         hasTopBorder: true,
                         hasBottomBorder: true,
                       ),
                       InfoRow(
                         label: 'Срок выполнения',
-                        value: task['taskTerm'],
+                        value: task.taskTerm.toString(),
                         hasBottomBorder: true,
                       ),
                       InfoRow(
                         label: 'Размещено',
-                        value: task['taskCreated'],
+                        value: task.taskCreated.toString(),
                         hasBottomBorder: true,
                       ),
                       InfoRow(
                         label: 'Статус',
-                        value: task['taskStatus'],
+                        value: task.taskStatus!,
                         hasBottomBorder: true,
                       ),
                       const Square(),
@@ -94,23 +92,22 @@ class TaskDetailExecutorScreen extends ConsumerWidget {
                             width: 32,
                             height: 32,
                             child: CircleAvatar(
-                              backgroundImage: task['customer']['photo'] != null
+                              backgroundImage: task.customer!.photo != null
                                   ? NetworkImage(
-                                      task['customer']['photo'].toString())
+                                      task.customer!.photo.toString())
                                   : const AssetImage(
                                       'assets/images/splash.png'),
                             ),
                           ),
                           const SizedBox(width: 8),
                           Text(
-                              '${task['customer']['firstName']} ${task['customer']['lastName']}'),
+                              '${task.customer!.firstName} ${task.customer!.lastName}'),
                           const Spacer(),
                           TextButton(
                             onPressed: () {
                               AutoRouter.of(context).push(
                                   TaskCustomerProfileRoute(
-                                      profileCustomerId: task['customer']
-                                          ['id']));
+                                      profileCustomerId: task.customer!.id));
                             },
                             child: const Text(
                               'Подробнее',
@@ -135,7 +132,7 @@ class TaskDetailExecutorScreen extends ConsumerWidget {
                 //     theme: 'white',
                 //     textColor: AppColors.red),
                 const Spacer(),
-                if (task['taskStatus'] == 'Поиск исполнителя')
+                if (task.taskStatus == 'Поиск исполнителя')
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -156,13 +153,17 @@ class TaskDetailExecutorScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
-                if (task['taskStatus'] != 'Поиск исполнителя')
+                if (task.taskStatus == 'В работе')
                   SizedBox(
                     width: double.infinity,
                     child: Btn(
-                        text: 'Подтвердить выполнение',
-                        onPressed: () =>
-                            openResponseModal(context, ref, taskId),
+                        text: 'Отправить на проверку',
+                        onPressed: () async {
+                          await ref.read(taskSendReviewProvider(taskId).future);
+                          if (context.mounted) {
+                            Navigator.pop(context);
+                          }
+                        },
                         theme: 'violet'),
                   ),
 

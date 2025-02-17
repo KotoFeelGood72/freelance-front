@@ -135,19 +135,32 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
           child: TaskList(
             filters: filters[selectedTabIndex],
             onTaskTap: (task) {
-              if (role == 'Executor') {
+              if (task['taskStatus'] == 'В работе') {
+                // Если задача "В работе" → отправляем всех в чат
+                AutoRouter.of(context).push(
+                  ChatsRoute(
+                    chatsId: task['roomUUID'],
+                    taskId: task['id'].toString(),
+                  ),
+                );
+              } else if (role == 'Executor') {
+                // Если исполнитель, но задача не "В работе"
                 if (selectedTabIndex == 1) {
+                  // Если на вкладке "Открытые" → открыть чат
                   AutoRouter.of(context).push(
                     ChatsRoute(
-                        chatsId: task['roomUUID'],
-                        taskId: task['id'].toString()),
+                      chatsId: task['roomUUID'],
+                      taskId: task['id'].toString(),
+                    ),
                   );
                 } else {
+                  // Иначе → детальная страница задачи
                   AutoRouter.of(context).push(
                     TaskDetailRoute(taskId: task['id'].toString()),
                   );
                 }
               } else {
+                // Если заказчик и задача не в работе → отклики
                 AutoRouter.of(context).push(
                   TaskResponseRoute(taskId: task['id'].toString()),
                 );

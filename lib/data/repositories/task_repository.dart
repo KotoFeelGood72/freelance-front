@@ -30,4 +30,25 @@ class TaskRepository {
   Future<void> createTask(TaskModels task) async {
     await DioConfig().dio.post('/tasks', data: task.toJson());
   }
+
+  Future<void> sendTaskReview(dynamic taskId) async {
+    await DioConfig().dio.post('/tasks/$taskId/review');
+  }
+
+  Future<void> assignExecutor(int taskId, int responseId) async {
+    try {
+      final response = await DioConfig().dio.post(
+            '/tasks/$taskId/response/$responseId',
+          );
+
+      if (response.statusCode == 200) {
+        print('Исполнитель успешно назначен');
+      } else {
+        throw Exception(
+            "Ошибка при назначении исполнителя: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("Ошибка при запросе: $e");
+    }
+  }
 }

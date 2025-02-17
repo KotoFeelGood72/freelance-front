@@ -172,16 +172,16 @@ class TaskNotifier extends StateNotifier<TaskState> {
   }
 }
 
-final taskByIdProvider = FutureProvider.family<Map<String, dynamic>, String>(
-  (ref, taskId) async {
-    final response = await DioConfig().dio.get('/tasks/$taskId');
-    if (response.statusCode == 200) {
-      return response.data as Map<String, dynamic>;
-    } else {
-      throw Exception("Ошибка при получении задачи: ${response.statusCode}");
-    }
-  },
-);
+// final taskByIdProvider = FutureProvider.family<Map<String, dynamic>, String>(
+//   (ref, taskId) async {
+//     final response = await DioConfig().dio.get('/tasks/$taskId');
+//     if (response.statusCode == 200) {
+//       return response.data as Map<String, dynamic>;
+//     } else {
+//       throw Exception("Ошибка при получении задачи: ${response.statusCode}");
+//     }
+//   },
+// );
 
 final taskResponsesProvider = FutureProvider.family<List<dynamic>, String>(
   (ref, taskId) async {

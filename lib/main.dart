@@ -3,6 +3,8 @@ import 'package:freelance/config/token_storage.dart';
 import 'package:freelance/firebase_options.dart';
 import 'package:freelance/router/app_router.dart';
 import 'package:freelance/src/constants/app_colors.dart';
+import 'package:freelance/src/services/firebase_messaging_service.dart';
+import 'package:freelance/src/services/notification_service.dart';
 import 'package:freelance/src/themes/text_themes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +48,27 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Инициализация локальных уведомлений
+  await NotificationService().initNotifications();
+
+  // Инициализация Firebase Messaging
+  await FirebaseMessagingService().initFirebaseMessaging();
+
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  // Запрос разрешений для пуш-уведомлений
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
+  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+    print("Разрешение на уведомления получено!");
+  } else {
+    print("Пользователь отказался от уведомлений.");
+  }
 
   await dotenv.load(fileName: 'assets/.env');
   runApp(
